@@ -1,0 +1,8 @@
+{
+  "dashscope_key": "",
+  "glm_key": "",
+  "llm_model": "qwen-plus",
+  "ocr_model": "qwen-vl-max",
+  "port": 8620,
+  "tts_engine": "auto"
+}

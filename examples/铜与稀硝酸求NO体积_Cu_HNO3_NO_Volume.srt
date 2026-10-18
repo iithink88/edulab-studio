@@ -1,0 +1,109 @@
+1
+00:00:02,200 --> 00:00:11,802
+铜与稀硝酸反应：3Cu + 8HNO₃(稀) = 3Cu(NO₃)₂ + 2NO↑ + 4H₂O。
+Copper reacts with dilute nitric acid: 3Cu + 8HNO₃ → 3Cu(NO₃)₂ + 2NO↑ + 4H₂O.
+
+2
+00:00:12,002 --> 00:00:16,213
+把 19.2 g 铜加入足量稀硝酸中完全反应。
+19.2 g of copper is added to excess dilute nitric acid and reacts completely.
+
+3
+00:00:16,413 --> 00:00:19,710
+求生成标准状况下 NO 的体积。
+Find the volume of nitrogen monoxide gas produced at standard temperature and pressure.
+
+4
+00:00:19,910 --> 00:00:23,695
+标准状况摩尔体积取 22.4 L/mol。
+The molar volume at STP is 22.4 L/mol.
+
+5
+00:00:25,345 --> 00:00:27,862
+先写出配平的化学方程式。
+First, write the balanced chemical equation.
+
+6
+00:00:28,062 --> 00:00:33,842
+3Cu + 8HNO₃ = 3Cu(NO₃)₂ + 2NO + 4H₂O。
+3Cu + 8HNO₃ → 3Cu(NO₃)₂ + 2NO + 4H₂O.
+
+7
+00:00:35,492 --> 00:00:40,658
+从方程式看出，铜与一氧化氮的物质的量之比为 3 : 2。
+From the equation, the mole ratio of Cu to NO is 3:2.
+
+8
+00:00:42,308 --> 00:00:45,228
+铜的摩尔质量是 64 g/mol。
+The molar mass of copper is 64 g/mol.
+
+9
+00:00:45,428 --> 00:00:49,651
+19.2 g 铜的物质的量是 19.2 除以 64。
+The amount of substance of 19.2 g copper is 19.2 divided by 64.
+
+10
+00:00:49,851 --> 00:00:51,494
+等于 0.3 mol。
+That equals 0.3 mol.
+
+11
+00:00:51,694 --> 00:00:57,938
+所以 0.3 mol 铜生成 NO 的物质的量是 0.3 乘以 2 再除以 3。
+Therefore, 0.3 mol of copper produces NO in the amount of 0.3 times 2 divided by 3.
+
+12
+00:00:58,138 --> 00:00:59,716
+等于 0.2 mol。
+That equals 0.2 mol.
+
+13
+00:01:01,366 --> 00:01:06,351
+标准状况下，NO 的体积是物质的量乘以摩尔体积。
+At STP, the volume of NO is the amount of substance multiplied by the molar volume.
+
+14
+00:01:06,551 --> 00:01:09,771
+0.2 mol 乘以 22.4 L/mol。
+0.2 mol multiplied by 22.4 L/mol.
+
+15
+00:01:09,971 --> 00:01:11,675
+等于 4.48 L。
+That equals 4.48 L.
+
+16
+00:01:13,325 --> 00:01:14,812
+回顾解题步骤：
+Review the steps:
+
+17
+00:01:15,012 --> 00:01:17,289
+一、写出配平方程式；
+1. Write the balanced equation;
+
+18
+00:01:17,489 --> 00:01:21,062
+二、找出铜与 NO 的物质的量之比；
+2. Find the mole ratio of Cu to NO;
+
+19
+00:01:21,262 --> 00:01:24,435
+三、由铜的质量算出其物质的量；
+3. Calculate the amount of substance of copper from its mass;
+
+20
+00:01:24,635 --> 00:01:28,359
+四、按系数比换算 NO 的物质的量；
+4. Convert to the amount of NO using the mole ratio;
+
+21
+00:01:28,559 --> 00:01:31,649
+五、用摩尔体积算出气体体积。
+5. Calculate the gas volume using the molar volume.
+
+22
+00:01:31,849 --> 00:01:33,771
+答案是 4.48 L。
+The answer is 4.48 L.

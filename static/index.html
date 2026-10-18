@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>edulab 一键课件工作台</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --ink:#1e2433; --ink2:#5b6478; --line:#e6e9f2;
+    --brand:#5b5bd6; --brand2:#8b5cf6; --sky:#0ea5e9; --teal:#0d9488; --amber:#d97706;
+    --ok:#16a34a; --bad:#dc2626; --warn:#d97706;
+    --shadow:0 1px 2px rgba(30,36,51,.05),0 8px 24px rgba(30,36,51,.07);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Microsoft YaHei","HarmonyOS Sans SC",system-ui,sans-serif;
+       background:var(--bg);color:var(--ink);min-height:100vh}
+  /* ---------- 顶栏 ---------- */
+  header{background:linear-gradient(120deg,#4f46e5 0%,#7c3aed 45%,#0ea5e9 100%);color:#fff;
+         padding:22px 32px 18px;box-shadow:var(--shadow)}
+  .hd-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .logo{width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.18);
+        display:flex;align-items:center;justify-content:center;font-size:26px;backdrop-filter:blur(4px)}
+  h1{font-size:22px;font-weight:700;letter-spacing:.5px}
+  .sub{font-size:12.5px;opacity:.85;margin-top:2px}
+  .env-chips{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:rgba(255,255,255,.16);
+        border:1px solid rgba(255,255,255,.25);padding:4px 10px;border-radius:999px;backdrop-filter:blur(4px)}
+  .dot{width:8px;height:8px;border-radius:50%;background:#a7f3d0;box-shadow:0 0 6px #34d399}
+  .dot.bad{background:#fecaca;box-shadow:0 0 6px #f87171}
+  .btn-ghost{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);color:#fff;
+             font-size:12px;padding:5px 12px;border-radius:999px;cursor:pointer}
+  .btn-ghost:hover{background:rgba(255,255,255,.26)}
+  /* ---------- 布局 ---------- */
+  .wrap{display:grid;grid-template-columns:238px 1fr;gap:20px;max-width:1440px;margin:22px auto;padding:0 22px}
+  @media (max-width:960px){.wrap{grid-template-columns:1fr}}
+  /* ---------- 左侧学科导航 ---------- */
+  nav .group{margin-bottom:14px}
+  nav .g-title{font-size:12px;color:var(--ink2);font-weight:600;margin:6px 6px 8px;letter-spacing:1px}
+  .skill-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card);
+             border:1.5px solid var(--line);border-radius:14px;padding:11px 13px;margin-bottom:8px;cursor:pointer;
+             transition:.15s;box-shadow:0 1px 2px rgba(30,36,51,.04)}
+  .skill-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow);border-color:#c7cbf5}
+  .skill-btn.active{border-color:var(--brand);background:linear-gradient(180deg,#f5f4ff,#fff);
+                    box-shadow:0 0 0 3px rgba(91,91,214,.12),var(--shadow)}
+  .skill-btn .ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+  .ic.math{background:#eef2ff}.ic.geo{background:#f5f3ff}.ic.chem{background:#ecfdf5}.ic.phys{background:#fffbeb}
+  .skill-btn .nm{font-size:13.5px;font-weight:600;line-height:1.25}
+  .skill-btn .ds{font-size:11px;color:var(--ink2);margin-top:1px}
+  .tag{display:inline-block;font-size:10px;padding:1px 7px;border-radius:999px;margin-left:auto;flex:none}
+  .tag.web{background:#e0f2fe;color:#0369a1}.tag.video{background:#fce7f3;color:#be185d}
+  /* ---------- 主区 ---------- */
+  main{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+  .card h2{font-size:15.5px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .card .hint{font-size:12.5px;color:var(--ink2);line-height:1.6}
+  .skill-head{display:flex;gap:14px;align-items:flex-start}
+  .skill-head .big-ic{width:52px;height:52px;border-radius:14px;font-size:26px;display:flex;align-items:center;justify-content:center;flex:none}
+  /* ---------- 输入区 ---------- */
+  .tabs{display:flex;gap:8px;margin:14px 0 12px}
+  .tab{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:7px 16px;font-size:13px;cursor:pointer;color:var(--ink2)}
+  .tab.active{border-color:var(--brand);color:var(--brand);background:#f5f4ff;font-weight:600}
+  textarea{width:100%;min-height:120px;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;
+           font-size:14px;line-height:1.7;resize:vertical;font-family:inherit;background:#fbfcfe}
+  textarea:focus{outline:none;border-color:var(--brand);background:#fff}
+  .drop{border:2px dashed #c9cfe6;border-radius:14px;padding:30px 16px;text-align:center;color:var(--ink2);
+        background:#fbfcfe;cursor:pointer;transition:.15s}
+  .drop:hover,.drop.over{border-color:var(--brand);background:#f5f4ff;color:var(--brand)}
+  .drop .big{font-size:34px;margin-bottom:8px}
+  #imgPreview{max-width:100%;max-height:280px;border-radius:12px;border:1px solid var(--line);margin-top:10px;display:none}
+  .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .preset{font-size:12px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--ink2)}
+  .preset:hover{border-color:var(--brand);color:var(--brand)}
+  /* ---------- 生成按钮 ---------- */
+  .gen-btn{width:100%;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:700;color:#fff;
+           background:linear-gradient(120deg,#4f46e5,#7c3aed 60%,#0ea5e9);cursor:pointer;letter-spacing:2px;
+           box-shadow:0 8px 20px rgba(79,70,229,.35);transition:.15s;margin-top:16px}
+  .gen-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 28px rgba(79,70,229,.42)}
+  .gen-btn:disabled{opacity:.55;cursor:not-allowed}
+  /* ---------- 任务/日志 ---------- */
+  .stage{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:600;color:var(--brand)}
+  .spinner{width:16px;height:16px;border:2.5px solid #dcd9fb;border-top-color:var(--brand);border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .logs{background:#0f1424;border-radius:12px;padding:14px 16px;height:260px;overflow-y:auto;
+        font-family:"Cascadia Code",Consolas,"JetBrains Mono",monospace;font-size:12px;line-height:1.75;margin-top:12px}
+  .logs .l{color:#a5b4fc;white-space:pre-wrap;word-break:break-all}
+  .logs .l.warn{color:#fbbf24}.logs .l.error{color:#f87171}
+  .logs .l .t{color:#475569;margin-right:8px}
+  /* ---------- 结果 ---------- */
+  .arts{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:12px}
+  .art{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fbfcfe}
+  .art .an{font-size:13px;font-weight:600;word-break:break-all}
+  .art .ap{font-size:11px;color:var(--ink2);margin:4px 0 8px;word-break:break-all}
+  .art .row{display:flex;gap:8px;flex-wrap:wrap}
+  .mini{border:1px solid var(--line);background:#fff;border-radius:8px;font-size:12px;padding:4px 10px;cursor:pointer;color:var(--ink2)}
+  .mini:hover{border-color:var(--brand);color:var(--brand)}
+  .art video,.art img.shot{width:100%;border-radius:8px;margin-bottom:8px;background:#000}
+  .empty{font-size:12.5px;color:var(--ink2);text-align:center;padding:26px 0}
+  /* ---------- 弹窗 ---------- */
+  .mask{position:fixed;inset:0;background:rgba(15,20,36,.55);display:none;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(3px)}
+  .mask.show{display:flex}
+  .modal{background:#fff;border-radius:18px;width:min(920px,94vw);max-height:92vh;overflow:auto;padding:22px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+  .modal h3{font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .modal iframe{width:100%;height:72vh;border:1px solid var(--line);border-radius:12px;background:#fff}
+  .frow{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:13px}
+  .frow label{width:110px;color:var(--ink2);flex:none}
+  .frow input,.frow select{flex:1;border:1.5px solid var(--line);border-radius:9px;padding:8px 11px;font-size:13px;font-family:inherit}
+  .frow input:focus{outline:none;border-color:var(--brand)}
+  .toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;font-size:13px;
+         padding:10px 18px;border-radius:10px;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,.3);display:none}
+  .kbd{font-size:11px;background:#eef0f7;border-radius:6px;padding:2px 7px;color:var(--ink2)}
+  a{color:var(--brand)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd-row">
+    <div class="logo">🎓</div>
+    <div>
+      <h1>edulab 一键课件工作台</h1>
+      <div class="sub">输入题目（文字 / 图片）→ 一键生成交互网页 或 讲解视频 · 6 个学科技能</div>
+    </div>
+    <div class="env-chips" id="envChips">
+      <span class="chip"><span class="dot bad"></span>环境检测中…</span>
+    </div>
+    <button class="btn-ghost" onclick="openSettings()">⚙️ 设置</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- ============ 左侧：按学科分类 ============ -->
+  <nav id="nav"></nav>
+
+  <!-- ============ 主区 ============ -->
+  <main>
+    <!-- 技能简介 -->
+    <div class="card">
+      <div class="skill-head">
+        <div class="big-ic" id="skillIc">🧮</div>
+        <div style="flex:1">
+          <h2 id="skillName">请选择左侧技能</h2>
+          <div class="hint" id="skillDesc">edulab 技能包按学科组织：数学 / 立体几何 / 化学 / 物理，分为「交互网页」与「讲解视频」两类产出。</div>
+          <div class="presets" id="presets"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 题目输入 -->
+    <div class="card">
+      <h2>📝 题目</h2>
+      <div class="hint">手动输入题目文字，或上传含有题目的图片（自动 OCR 识别）。</div>
+      <div class="tabs">
+        <button class="tab active" id="tabText" onclick="switchTab('text')">⌨️ 手动输入</button>
+        <button class="tab" id="tabImg" onclick="switchTab('img')">🖼️ 上传图片</button>
+      </div>
+      <div id="paneText">
+        <textarea id="problem" placeholder="例如：正四棱锥 P-ABCD 底面边长为 4，高为 2，E 为 PC 的中点，求直线 BE 与平面 PAD 所成角的正弦值。&#10;&#10;视频类技能会据此完成：解题 → 分镜 → 配音 → 渲染 MP4"></textarea>
+      </div>
+      <div id="paneImg" style="display:none">
+        <div class="drop" id="drop">
+          <div class="big">📷</div>
+          <div><b>点击选择</b> 或把题目图片拖到这里</div>
+          <div style="font-size:11.5px;margin-top:6px">支持 PNG / JPG，识别后可继续编辑文字</div>
+        </div>
+        <input type="file" id="file" accept="image/*" style="display:none">
+        <img id="imgPreview" alt="题目图片">
+        <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+          <button class="mini" onclick="doOcr()">🔍 识别图中文字</button>
+          <span class="hint" id="ocrHint" style="font-size:12px"></span>
+        </div>
+      </div>
+      <button class="gen-btn" id="genBtn" onclick="generate()">✨ 一键生成</button>
+    </div>
+
+    <!-- 任务与日志 -->
+    <div class="card" id="jobCard" style="display:none">
+      <div class="stage"><span class="spinner" id="spin"></span><span id="stageTxt">准备中…</span></div>
+      <div class="logs" id="logs"></div>
+    </div>
+
+    <!-- 结果 -->
+    <div class="card" id="resCard" style="display:none">
+      <h2>🎁 生成结果</h2>
+      <div class="arts" id="arts"></div>
+    </div>
+  </main>
+</div>
+
+<!-- 预览弹窗 -->
+<div class="mask" id="previewMask" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal">
+    <h3 id="pvTitle">预览</h3>
+    <div id="pvBody"></div>
+    <div style="text-align:right;margin-top:12px"><button class="mini" onclick="document.getElementById('previewMask').classList.remove('show')">关闭</button></div>
+  </div>
+</div>
+
+<!-- 设置弹窗 -->
+<div class="mask" id="setMask" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal" style="width:min(560px,94vw)">
+    <h3>⚙️ 设置</h3>
+    <div class="frow"><label>百炼 Key</label><input id="cfgDash" placeholder="sk-…（OCR + 题目理解 + 内容生成）"></div>
+    <div class="frow"><label>智谱 Key</label><input id="cfgGlm" placeholder="可选：GLM-TTS 配音更佳，留空用 edge-tts"></div>
+    <div class="frow"><label>文本模型</label><input id="cfgLlm" placeholder="qwen-plus"></div>
+    <div class="frow"><label>识别模型</label><input id="cfgOcr" placeholder="qwen-vl-max"></div>
+    <div class="frow"><label>配音引擎</label>
+      <select id="cfgTts"><option value="auto">auto（有 GLM 用 GLM，否则 edge-tts）</option><option value="edge">edge-tts（免费）</option><option value="glm">GLM-TTS</option></select>
+    </div>
+    <div style="font-size:12px;color:var(--ink2);margin:6px 0 14px;line-height:1.7">
+      Key 只保存在本机 <span class="kbd">config.json</span>，不会随分享包外发。
+    </div>
+    <div style="text-align:right"><button class="mini" style="background:var(--brand);color:#fff;border-color:var(--brand);padding:8px 18px" onclick="saveSettings()">保存</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==================== 数据 ==================== */
+const SKILLS = [
+  {id:"edu-math-video",        group:"数学",   ic:"📐", cls:"math", name:"数学讲解视频",   desc:"数学题 → 1920×1080 MP4：中文配音 + 中英双语字幕 + 手绘风动画，画面跟着推理走。", kind:"video", form:"视频 · MP4"},
+  {id:"edu-analytic-geometry", group:"数学",   ic:"📈", cls:"math", name:"解析几何交互课件", desc:"圆锥曲线题 → 单页交互网页：参数滑块实时重算 + 理论范围条 + KaTeX 分步解析。", kind:"web", form:"交互网页 · HTML"},
+  {id:"edu-solid-geometry",    group:"立体几何", ic:"🧊", cls:"geo",  name:"立体几何交互课件", desc:"立体几何题 → Three.js 可旋转 3D 模型 + MathJax 分步解析，建系+向量法精确求解。", kind:"web", form:"交互网页 · HTML"},
+  {id:"edu-chem-reaction",     group:"化学",   ic:"⚗️", cls:"chem", name:"化学反应微观演示", desc:"化学反应 → 3D 分子动画：断键/成键/原子重组，sympy 自动配平 + 原子守恒计数。", kind:"web", form:"交互网页 · HTML"},
+  {id:"edu-chem-video",        group:"化学",   ic:"🧪", cls:"chem", name:"化学讲解视频",   desc:"化学题 → 黑板风 MP4：化合价数轴、双线桥、三段式逐行填，守恒被「数」出来。", kind:"video", form:"视频 · MP4"},
+  {id:"edu-physics-video",     group:"物理",   ic:"🧲", cls:"phys", name:"物理讲解视频",   desc:"物理题 → 蓝图风 MP4：受力分析、x(t) 运动、v-t 同步生长，图跟着物理解走。", kind:"video", form:"视频 · MP4"},
+];
+const PRESETS = {
+  "edu-solid-geometry":[
+    {t:"正四棱锥 · 线面角（底 4 高 2）", key:"solid-pyramid", params:{base_edge:4,height:2}},
+    {t:"正方体 · 线面角（棱长 2）", key:"solid-cube", params:{edge:2}},
+    {t:"长方体 · 体积（3×4×5）", key:"solid-box", params:{lx:3,ly:4,lz:5}},
+    {t:"正方体 · 线面角（棱长 1）", key:"solid-cube", params:{edge:1}},
+  ],
+  "edu-analytic-geometry":[
+    {t:"椭圆 · 数量积范围 [-3,7/4]", key:"ellipse_dot_range"},
+    {t:"抛物线 · 焦点弦定值 -3", key:"parabola_dot_const"},
+    {t:"椭圆 · 面积最值", key:"ellipse_area_max"},
+    {t:"双曲线 · 离心率范围", key:"hyperbola_ecc_range"},
+  ],
+  "edu-chem-reaction":[
+    {t:"甲烷燃烧 CH₄+2O₂", key:"combustion_ch4"},
+    {t:"电解水 2H₂O", key:"electrolysis_water"},
+    {t:"钠与氯气 2Na+Cl₂", key:"redox_na_cl2"},
+    {t:"酯化反应（机理）", key:"esterification"},
+  ],
+  "edu-math-video":[],"edu-physics-video":[],"edu-chem-video":[],
+};
+let cur = null, imageB64 = null, pollTimer = null;
+
+/* ==================== 左侧导航 ==================== */
+function renderNav(){
+  const groups = {};
+  SKILLS.forEach(s=>{(groups[s.group]=groups[s.group]||[]).push(s)});
+  const nav = document.getElementById("nav");
+  nav.innerHTML = Object.entries(groups).map(([g,list])=>`
+    <div class="group"><div class="g-title">${g}</div>
+    ${list.map(s=>`<button class="skill-btn" id="sk-${s.id}" onclick="selectSkill('${s.id}')">
+        <div class="ic ${s.cls}">${s.ic}</div>
+        <div><div class="nm">${s.name}</div><div class="ds">${s.form}</div></div>
+        <span class="tag ${s.kind}">${s.kind==="web"?"网页":"视频"}</span>
+      </button>`).join("")}
+    </div>`).join("");
+}
+function selectSkill(id){
+  cur = SKILLS.find(s=>s.id===id);
+  document.querySelectorAll(".skill-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("sk-"+id).classList.add("active");
+  document.getElementById("skillIc").textContent = cur.ic;
+  document.getElementById("skillIc").className = "big-ic " + cur.cls;
+  document.getElementById("skillName").textContent = cur.name;
+  document.getElementById("skillDesc").textContent = cur.desc + "（" + cur.form + "）";
+  const ps = PRESETS[id]||[];
+  document.getElementById("presets").innerHTML = ps.length
+    ? "<span style='font-size:12px;color:var(--ink2);align-self:center'>⚡ 预设题库：</span>" +
+      ps.map((p,i)=>`<button class="preset" onclick="usePreset(${i})">${p.t}</button>`).join("")
+    : "<span style='font-size:12px;color:var(--ink2)'>视频技能无预设题库：请直接输入题目（文字或图片），一键完成 解题→分镜→配音→渲染。</span>";
+}
+function usePreset(i){
+  const p = PRESETS[cur.id][i];
+  document.getElementById("problem").value = p.t;
+  switchTab("text");
+  toast("已填入预设题目，点击「一键生成」");
+}
+
+/* ==================== 输入 ==================== */
+function switchTab(t){
+  document.getElementById("tabText").classList.toggle("active", t==="text");
+  document.getElementById("tabImg").classList.toggle("active", t==="img");
+  document.getElementById("paneText").style.display = t==="text"?"block":"none";
+  document.getElementById("paneImg").style.display = t==="img"?"block":"none";
+}
+const drop = document.getElementById("drop"), fileInput = document.getElementById("file");
+drop.onclick = ()=>fileInput.click();
+fileInput.onchange = e=>{ if(e.target.files[0]) readImg(e.target.files[0]); };
+drop.ondragover = e=>{e.preventDefault();drop.classList.add("over")};
+drop.ondragleave = ()=>drop.classList.remove("over");
+drop.ondrop = e=>{e.preventDefault();drop.classList.remove("over"); if(e.dataTransfer.files[0]) readImg(e.dataTransfer.files[0])};
+function readImg(f){
+  const r = new FileReader();
+  r.onload = ()=>{ imageB64 = r.result.split(",")[1];
+    const p = document.getElementById("imgPreview"); p.src = r.result; p.style.display="block";
+    document.getElementById("ocrHint").textContent = `已选择：${f.name}（${(f.size/1024).toFixed(0)} KB）`; };
+  r.readAsDataURL(f);
+}
+async function doOcr(){
+  if(!imageB64){ toast("请先选择图片"); return; }
+  document.getElementById("ocrHint").textContent = "识别中…";
+  try{
+    const r = await fetch("/api/ocr",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({image:imageB64})});
+    const j = await r.json();
+    if(j.error) throw new Error(j.error);
+    document.getElementById("problem").value = j.text;
+    document.getElementById("ocrHint").textContent = "✅ 识别完成，已填入文字（可编辑）";
+    switchTab("text");
+  }catch(e){ document.getElementById("ocrHint").textContent = "❌ " + e.message; }
+}
+
+/* ==================== 生成 ==================== */
+async function generate(){
+  if(!cur){ toast("请先在左侧选择技能"); return; }
+  const text = document.getElementById("problem").value.trim();
+  const usingImg = document.getElementById("paneImg").style.display!=="none";
+  if(!text && !imageB64){ toast("请先输入题目或上传图片"); return; }
+  const preset = PRESETS[cur.id]?.find(p=>p.t===text);
+  const body = {skill:cur.id, mode: preset?"preset":"custom", text, payload: preset||{}, image:(usingImg?imageB64:null)};
+  document.getElementById("genBtn").disabled = true;
+  document.getElementById("genBtn").textContent = "⏳ 生成中…";
+  document.getElementById("jobCard").style.display = "block";
+  document.getElementById("resCard").style.display = "none";
+  document.getElementById("arts").innerHTML = "";
+  document.getElementById("logs").innerHTML = "";
+  document.getElementById("stageTxt").textContent = "任务排队中…";
+  document.getElementById("jobCard").scrollIntoView({behavior:"smooth",block:"nearest"});
+  try{
+    const r = await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const j = await r.json();
+    if(j.error) throw new Error(j.error);
+    poll(j.job_id);
+  }catch(e){
+    toast("❌ " + e.message);
+    document.getElementById("jobCard").style.display = "none";
+    document.getElementById("genBtn").disabled = false;
+    document.getElementById("genBtn").textContent = "✨ 一键生成";
+  }
+}
+function poll(jid){
+  clearInterval(pollTimer);
+  pollTimer = setInterval(async ()=>{
+    try{
+      const r = await fetch("/api/job/"+jid); const j = await r.json();
+      if(j.error){ clearInterval(pollTimer); return; }
+      renderJob(j);
+      if(j.status==="done"||j.status==="error"){
+        clearInterval(pollTimer);
+        document.getElementById("spin").style.display="none";
+        document.getElementById("genBtn").disabled = false;
+        document.getElementById("genBtn").textContent = "✨ 一键生成";
+        renderArts(j);
+      }
+    }catch(e){}
+  }, 900);
+}
+function renderJob(j){
+  document.getElementById("stageTxt").textContent = j.stage || j.status;
+  const box = document.getElementById("logs");
+  box.innerHTML = j.logs.map(l=>`<div class="l ${l.level}"><span class="t">${l.t}s</span>${esc(l.msg)}</div>`).join("");
+  box.scrollTop = box.scrollHeight;
+}
+function renderArts(j){
+  document.getElementById("resCard").style.display = "block";
+  const box = document.getElementById("arts");
+  if(!j.artifacts || !j.artifacts.length){
+    box.innerHTML = `<div class="empty">没有产物。${j.error?("错误："+esc(j.error)):""}</div>`; return;
+  }
+  box.innerHTML = j.artifacts.map((a,i)=>artCard(a,i)).join("");
+  document.getElementById("resCard").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function artCard(a,i){
+  const url = "/api/out?path=" + encodeURIComponent(a.path);
+  let media = "";
+  if(a.type==="mp4") media = `<video src="${url}" controls></video>`;
+  if(a.type==="img") media = `<img class="shot" src="${url}" alt="">`;
+  if(a.type==="html") media = `<button class="mini" onclick="previewHtml('${esc(a.path)}')">🌐 网页预览</button> `;
+  const copyBtn = `<button class="mini" onclick="copyPath('${esc(a.path)}')">📋 复制路径</button>`;
+  const openBtn = (a.type==="html"||a.type==="mp4"||a.type==="srt"||a.type==="img")
+      ? `<a href="${url}" target="_blank"><button class="mini">⬇️ 下载/新窗口打开</button></a>` : "";
+  return `<div class="art">${media}<div class="an">${esc(a.name)}</div>
+    <div class="ap">${esc(a.path)}</div>
+    <div class="row">${copyBtn}${openBtn}</div></div>`;
+}
+function previewHtml(p){
+  document.getElementById("pvTitle").textContent = "🌐 网页预览：" + p.split(/[\\/]/).pop();
+  document.getElementById("pvBody").innerHTML =
+    `<iframe src="/api/out?path=${encodeURIComponent(p)}"></iframe>`;
+  document.getElementById("previewMask").classList.add("show");
+}
+function copyPath(p){
+  navigator.clipboard.writeText(p).then(()=>toast("路径已复制"));
+}
+
+/* ==================== 设置 / 状态 ==================== */
+async function refreshStatus(){
+  try{
+    const s = await (await fetch("/api/status")).json();
+    const chips = [];
+    const chip = (ok,txt)=>`<span class="chip"><span class="dot ${ok?"":"bad"}"></span>${txt}</span>`;
+    chips.push(chip(s.deps.python_pkgs, "Python 依赖"));
+    chips.push(chip(s.deps.node_modules, "Node/渲染内核"));
+    chips.push(chip(s.keys.dashscope, "百炼 Key"));
+    chips.push(chip(s.keys.glm, "GLM 配音"));
+    const miss = SKILLS.filter(k=>!s.skills[k.id]).map(k=>k.name);
+    chips.push(chip(!miss.length, miss.length?("缺技能:"+miss.join(",")):"6 技能就绪"));
+    document.getElementById("envChips").innerHTML = chips.join("");
+    window.__status = s;
+  }catch(e){
+    document.getElementById("envChips").innerHTML = `<span class="chip"><span class="dot bad"></span>后端未连接</span>`;
+  }
+}
+function openSettings(){
+  document.getElementById("cfgDash").value = window.__status?.keys?.dashscope ? "（已配置，输入可替换）" : "";
+  document.getElementById("cfgGlm").value = "";
+  document.getElementById("setMask").classList.add("show");
+}
+async function saveSettings(){
+  const body = {
+    llm_model: document.getElementById("cfgLlm").value || "qwen-plus",
+    ocr_model: document.getElementById("cfgOcr").value || "qwen-vl-max",
+    tts_engine: document.getElementById("cfgTts").value,
+  };
+  const d = document.getElementById("cfgDash").value.trim();
+  const g = document.getElementById("cfgGlm").value.trim();
+  if(d && !d.startsWith("（")) body.dashscope_key = d;
+  if(g) body.glm_key = g;
+  const r = await fetch("/api/config",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const j = await r.json();
+  if(j.error){ toast("保存失败："+j.error); return; }
+  document.getElementById("setMask").classList.remove("show");
+  toast("已保存"); refreshStatus();
+}
+function toast(t){
+  const el = document.getElementById("toast");
+  el.textContent = t; el.style.display="block";
+  clearTimeout(el.__t); el.__t = setTimeout(()=>el.style.display="none", 2600);
+}
+function esc(s){ return (s||"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+renderNav(); selectSkill("edu-solid-geometry"); refreshStatus();
+setInterval(refreshStatus, 15000);
+</script>
+</body>
+</html>
